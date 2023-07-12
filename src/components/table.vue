@@ -39,6 +39,8 @@
           </tr>
         </tbody>
       </table>
+      <p>Salaire max = {{ max }}</p>
+      <p>Salaire min = {{ min }}</p>
     </div>
   </template>
 
@@ -58,10 +60,40 @@
         },
         afficheModal: false,
         modalType:"",
-        employes: []
+        employes: [],
+        min : 0,
+        max:0
       };
     },
     methods: {
+      getMaxSalaire() {
+      if (this.employes.length === 0) {
+        return 0;
+      }
+
+      let maxSalaire = this.employes[0].salaire;
+      for (let i = 1; i < this.employes.length; i++) {
+        if (this.employes[i].salaire > maxSalaire) {
+          maxSalaire = this.employes[i].salaire;
+        }
+      }
+
+      return this.max = maxSalaire;
+    },
+    getMinSalaire() {
+      if (this.employes.length === 0) {
+        return 0;
+      }
+
+      let minSalaire = this.employes[0].salaire;
+      for (let i = 1; i < this.employes.length; i++) {
+        if (this.employes[i].salaire < minSalaire) {
+          minSalaire = this.employes[i].salaire;
+        }
+      }
+
+      return this.min = minSalaire;
+    },
       closeModal() {
         this.afficheModal = false;
       },
@@ -137,6 +169,8 @@
         axios.get('http://localhost:3300/api/table')
           .then(response => {
             this.employes = response.data;
+            this.getMaxSalaire();
+            this.getMinSalaire();
           });
       }
     },
