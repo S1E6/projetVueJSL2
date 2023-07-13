@@ -49,7 +49,7 @@ app.post('/api/employes', async (req, res) => {
     const salaire = req.query.salaire;
 
     // Insérer
-    connection.query('INSERT INTO employe (numemp, nom, salaire) VALUES (?, ?, ?)', [id, nom, salaire], (err, result) => {
+    connection.query('INSERT INTO employe (numemp, nom, salaire) VALUES (?, ?, ?)', [id, nom, salaire], (err) => {
       if (err) {
         console.error('Erreur lors de l\'ajout de l\'employé dans la base de données:', err);
         res.status(500).json({ error: 'Erreur lors de l\'ajout de l\'employé dans la base de données' });
@@ -93,7 +93,7 @@ app.put('/api/employes/:id', (req, res) => {
 // Supprimer un employé
 app.delete('/api/employes/:id', (req, res) => {
   const id = req.params.id;
-  connection.query('DELETE FROM employe WHERE numemp = ?', [id], (err, result) => {
+  connection.query('DELETE FROM employe WHERE numemp = ?', [id], (err) => {
     if (err) {
       console.error('Erreur lors de la suppression de l\'employé dans la base de données:', err);
       res.status(500).json({ error: 'Erreur lors de la suppression de l\'employé dans la base de données' });

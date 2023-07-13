@@ -18,12 +18,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="employe in employes" :key="employe.numemp">
-            <td>{{ employe.numemp }}</td>
-            <td>{{ employe.nom }}</td>
-            <td>{{ employe.salaire }}</td>
-            <td>{{ obs(employe.salaire) }}</td>
-            <td>
+          <tr v-for="(employe, index) in employes.slice(firstRowIndex, firstRowIndex + rowsPerPage)" :key="employe.numemp">
+              <td>{{ employe.numemp }}</td>
+              <td class="text-uppercase">{{ employe.nom }}</td>
+              <td>{{ employe.salaire }}</td>
+              <td>{{ obs(employe.salaire) }}</td>
+              <td>
               <button class="btn btnEdit" id="btnEdit" @click="openUpdateForm(employe)">
                 <svg id="editIcon" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
                   <path fill="currentColor" d="m18.988 2.012l3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287l-3-3L8 13z"/>
@@ -39,8 +39,12 @@
           </tr>
         </tbody>
       </table>
-      <p>Salaire max = {{ max }}</p>
-      <p>Salaire min = {{ min }}</p>
+      <div class="pagination">
+        <button class="btn btn-secondary" :disabled="firstRowIndex === 0" @click="previousPage()">Précedent</button>
+        <button class="btn btn-secondary"  :disabled="firstRowIndex + rowsPerPage >= totalRows" @click="nextPage()">Suivant</button>
+      </div>
+      <p class="text-centre" >Salaire maximal = {{ max }}</p>
+      <p class="text-centre">Salaire minimal = {{ min }}</p>
     </div>
   </template>
 
@@ -62,7 +66,10 @@
         modalType:"",
         employes: [],
         min : 0,
-        max:0
+        max:0,
+        firstRowIndex: 0, // Index de la première ligne affichée
+        rowsPerPage: 10, // Nombre de lignes affichées par page
+        totalRows: 0 // Nomb
       };
     },
     methods: {
@@ -70,7 +77,6 @@
       if (this.employes.length === 0) {
         return 0;
       }
-
       let maxSalaire = this.employes[0].salaire;
       for (let i = 1; i < this.employes.length; i++) {
         if (this.employes[i].salaire > maxSalaire) {
@@ -80,6 +86,19 @@
 
       return this.max = maxSalaire;
     },
+    nextPage() {
+    const lastRowIndex = this.firstRowIndex + this.rowsPerPage;
+    if (lastRowIndex < this.totalRows) {
+      this.firstRowIndex = lastRowIndex;
+    }
+    },
+
+   previousPage() {
+    const newFirstRowIndex = this.firstRowIndex - this.rowsPerPage;
+    if (newFirstRowIndex >= 0) {
+      this.firstRowIndex = newFirstRowIndex;
+     }
+     },
     getMinSalaire() {
       if (this.employes.length === 0) {
         return 0;
@@ -166,13 +185,15 @@
         });
       },
       loadEmployes() {
-        axios.get('http://localhost:3300/api/table')
-          .then(response => {
-            this.employes = response.data;
-            this.getMaxSalaire();
-            this.getMinSalaire();
-          });
-      }
+      axios.get('http://localhost:3300/api/table')
+      .then(response => {
+        this.employes = response.data;
+        this.getMaxSalaire();
+        this.getMinSalaire();
+        this.totalRows = this.employes.length; 
+      });
+},
+
     },
     mounted() {
       this.loadEmployes();
