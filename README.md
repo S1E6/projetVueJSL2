@@ -1,2 +1,3 @@
-# projetVueJSL2
-L2GBENI
+# projet Vue JS 
+using a Express JS API
+
